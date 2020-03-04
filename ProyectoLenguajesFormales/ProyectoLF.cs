@@ -10,10 +10,11 @@ namespace ProyectoLenguajesFormales
     {
         static void Main(string[] args)
         {
-            var listaSets = new Dictionary<string,char>();
+            var dictionarySets = new Dictionary<string,List<int>>();
             Console.WriteLine("Ingrese ruta de archivo:");
             var rutaArchivo=Console.ReadLine();
             var numeroLinea = 0;
+            var error = false;
             using (var reader = new StreamReader(new FileStream(rutaArchivo, FileMode.Open)))
             {
                 var lineaActual = reader.ReadToEnd();
@@ -27,7 +28,7 @@ namespace ProyectoLenguajesFormales
                     reader.BaseStream.Seek(0,SeekOrigin.Begin);
                     lineaActual = reader.ReadLine();
                     var funcionActual = string.Empty;
-                    while (lineaActual != null)
+                    while (lineaActual != null && !error)
                     {
                         if (lineaActual.Contains("SETS")&&funcionActual==string.Empty)
                         {
@@ -49,14 +50,55 @@ namespace ProyectoLenguajesFormales
                         {
                             if (!lineaActual.Contains("SETS"))
                             {
-                                var lineaSet = lineaActual.Trim(' ');
-                                var nombreSet = lineaSet.Split('=')[0];
-                                var contenidoSet = lineaSet.Split('=')[1];
-                                var separacionMas = contenidoSet.Split('+');
-                                //foreach (var item in separacionMas)
-                                //{
 
-                                //}
+                                var lineaSet = lineaActual.Replace("\t"," ");
+                                lineaSet=lineaSet.Trim();
+                                var nombreSet = lineaSet.Split('=')[0];
+                                var contenidoSet = lineaSet.Split('=')[1]; 
+                                var listValuesDict = new List<int>();
+                                if (contenidoSet.Contains("CHR"))
+                                {
+                                    var contenidoCHR = contenidoSet.Replace("CHR", string.Empty);
+                                    contenidoCHR = contenidoCHR.Replace("..", "|");
+                                    contenidoCHR = contenidoCHR.Replace("(", string.Empty);
+                                    contenidoCHR = contenidoCHR.Replace(")", string.Empty);
+                                    var rango = contenidoCHR.Split('|');
+                                    for (int i = Convert.ToInt32(rango[0]); i <= Convert.ToInt32(rango[1]); i++)
+                                    {
+                                        listValuesDict.Add(i);
+                                    }
+                                    dictionarySets.Add(nombreSet, listValuesDict);
+                                }
+                                else
+                                {
+                                    var separacionMas = contenidoSet.Split('+');
+                                    foreach (var item in separacionMas)
+                                    {
+                                        var sustitucionPuntos = item.Replace("..", ".");
+                                        sustitucionPuntos = sustitucionPuntos.Trim();
+                                        var rango = sustitucionPuntos.Split('.');
+                                        if (rango.Length == 1)
+                                        {
+                                            rango[0] = rango[0].Replace("'", string.Empty);
+                                            var valorRInicio = Convert.ToInt32(rango[0].ToCharArray()[0]);
+                                            listValuesDict.Add(valorRInicio);
+                                        }
+                                        else
+                                        {
+                                            rango[0] = rango[0].Replace("'", string.Empty);
+                                            rango[1] = rango[1].Replace("'", string.Empty);
+                                            var valorRInicio = Convert.ToInt32(rango[0].ToCharArray()[0]);
+                                            var valorRFin = Convert.ToInt32(rango[1].ToCharArray()[0]);
+                                            for (int i = valorRInicio; i <= valorRFin; i++)
+                                            {
+                                                listValuesDict.Add(i);
+                                            }
+                                        }
+
+                                    }
+                                    dictionarySets.Add(nombreSet, listValuesDict);
+                                }
+                                
                             }
                         }
                         lineaActual = reader.ReadLine();
