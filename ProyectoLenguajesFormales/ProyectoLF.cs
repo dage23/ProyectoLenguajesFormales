@@ -219,14 +219,44 @@ namespace ProyectoLenguajesFormales
                                             var separadaIgual = lineaActual.Split('=');
                                             if (separadaIgual[1].Contains("  "))
                                             {
+                                                separadaIgual[1] = separadaIgual[1].Replace(" *", "*");
                                                 separadaIgual[1] = separadaIgual[1].Replace("  ", ".");
+                                                separadaIgual[1] = separadaIgual[1].TrimStart();
+                                                separadaIgual[1] = separadaIgual[1].TrimEnd();
                                                 var sustituidoEspacios = separadaIgual[1].Trim();
                                                 dictionaryTokens.Add(separadaIgual[0].Replace('=', ' ').Trim(), sustituidoEspacios);
                                             }
                                             else
                                             {
-                                                var sustituidoEspacio = separadaIgual[1].Trim();
-                                                dictionaryTokens.Add(separadaIgual[0].Replace('=', ' ').Trim(), sustituidoEspacio);
+                                                separadaIgual[1] = separadaIgual[1].TrimStart();
+                                                separadaIgual[1] = separadaIgual[1].TrimEnd();
+                                                separadaIgual[1] = separadaIgual[1].Replace(" *", "*");
+                                                var tokenFin = string.Empty;
+                                                if (separadaIgual[1].Contains(" ("))
+                                                {
+                                                    foreach (var item in separadaIgual[1])
+                                                    {
+                                                        if (item == '(')
+                                                        {
+                                                            tokenFin = tokenFin + '.' + item;
+                                                        }
+                                                        else if (item == ' ')
+                                                        {
+                                                            //skip
+                                                        }
+                                                        else
+                                                        {
+                                                            tokenFin = tokenFin + item;
+                                                        }
+                                                    }
+                                                    dictionaryTokens.Add(separadaIgual[0].Replace('=', ' ').Trim(), tokenFin);
+                                                }
+                                                else
+                                                {
+                                                    var sustituidoEspacio = separadaIgual[1].Replace(" ", ".");
+                                                    dictionaryTokens.Add(separadaIgual[0].Replace('=', ' ').Trim(), sustituidoEspacio);
+                                                }
+                                                
                                             }
                                         }
                                         else
@@ -280,6 +310,45 @@ namespace ProyectoLenguajesFormales
 
                     Console.WriteLine("Posee un error en la linea" + numeroLinea);
                 }               
+            }
+            //Console.ReadLine();
+            var listaExpresionRegular = new List<string>();
+            var expresionRegular = string.Empty;
+            var conteo2 = 0;
+            foreach (var item in dictionaryTokens)
+            {
+                var tokenActual = "(" + item.Value + ")";
+                if (conteo2==dictionaryTokens.Count-1)
+                {
+                    expresionRegular += tokenActual;
+                }
+                else
+                {
+                    expresionRegular += tokenActual + "|";
+                }
+                conteo2++;
+            }
+            expresionRegular = "(" + expresionRegular + ")" + ".#";
+            var tokenConcatenacion = string.Empty;
+            foreach (var item in expresionRegular)
+            {
+                if (item=='('|| item == ')'|| item == '.'|| item == '*'|| item == '?'|| item == '+'|| item == '|'||item=='#')
+                {
+                    if (tokenConcatenacion.Length!=0)
+                    {
+                        listaExpresionRegular.Add(tokenConcatenacion.ToString());
+                        tokenConcatenacion = string.Empty;
+                        listaExpresionRegular.Add(item.ToString());
+                    }
+                    else
+                    {
+                        listaExpresionRegular.Add(item.ToString());
+                    }
+                }
+                else
+                {
+                    tokenConcatenacion = tokenConcatenacion + item;
+                }
             }
             Console.ReadLine();
         }
