@@ -158,7 +158,20 @@ namespace ProyectoLenguajesFormales
                                             token = token.TrimStart();
                                             token = token.TrimEnd();
                                             token = token.Replace(" ", ".");
-                                            dictionaryTokens.Add(nombreToken.Replace('=', ' ').Trim(), token);
+                                            var tokenParentesis = "(";
+                                            foreach (var item in token)
+                                            {
+                                                if (item=='|')
+                                                {
+                                                    tokenParentesis = tokenParentesis + ")" + item+"(";
+                                                }
+                                                else
+                                                {
+                                                    tokenParentesis += item;
+                                                }                                                
+                                            }
+                                            tokenParentesis += ")";
+                                            dictionaryTokens.Add(nombreToken.Replace('=', ' ').Trim(), tokenParentesis);
                                         }
                                         else
                                         {
@@ -256,7 +269,7 @@ namespace ProyectoLenguajesFormales
                                                     var sustituidoEspacio = separadaIgual[1].Replace(" ", ".");
                                                     dictionaryTokens.Add(separadaIgual[0].Replace('=', ' ').Trim(), sustituidoEspacio);
                                                 }
-                                                
+
                                             }
                                         }
                                         else
@@ -309,16 +322,15 @@ namespace ProyectoLenguajesFormales
                 {
 
                     Console.WriteLine("Posee un error en la linea" + numeroLinea);
-                }               
+                }
             }
-            //Console.ReadLine();
             var listaExpresionRegular = new List<string>();
             var expresionRegular = string.Empty;
             var conteo2 = 0;
             foreach (var item in dictionaryTokens)
             {
                 var tokenActual = "(" + item.Value + ")";
-                if (conteo2==dictionaryTokens.Count-1)
+                if (conteo2 == dictionaryTokens.Count - 1)
                 {
                     expresionRegular += tokenActual;
                 }
@@ -332,9 +344,9 @@ namespace ProyectoLenguajesFormales
             var tokenConcatenacion = string.Empty;
             foreach (var item in expresionRegular)
             {
-                if (item=='('|| item == ')'|| item == '.'|| item == '*'|| item == '?'|| item == '+'|| item == '|'||item=='#')
+                if (item == '(' || item == ')' || item == '.' || item == '*' || item == '?' || item == '+' || item == '|' || item == '#')
                 {
-                    if (tokenConcatenacion.Length!=0)
+                    if (tokenConcatenacion.Length != 0)
                     {
                         listaExpresionRegular.Add(tokenConcatenacion.ToString());
                         tokenConcatenacion = string.Empty;
@@ -350,7 +362,12 @@ namespace ProyectoLenguajesFormales
                     tokenConcatenacion = tokenConcatenacion + item;
                 }
             }
+            //Crear Arbol
+            var stackArboles = new Stack<NodoArbol>();
+            var stackTokens = new Stack<string>();
+            var ArbolExpresion = Metodos.CreacionArbol(listaExpresionRegular, stackTokens, stackArboles);
             Console.ReadLine();
+
         }
     }
 }
