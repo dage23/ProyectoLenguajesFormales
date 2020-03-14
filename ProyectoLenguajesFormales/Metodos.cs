@@ -8,7 +8,7 @@ namespace ProyectoLenguajesFormales
 {
     class Metodos
     {
-        public static int enumeracion = 0;
+        public static int enumeracion = 1;
         public static int PoseePalabrasReservadas(string archivo)
         {
             var resultado = 1;
@@ -76,12 +76,12 @@ namespace ProyectoLenguajesFormales
                         stackArbol.Push(nodoTemp);
                     }
                     //Prueba sin precedencia 
-                    else if (stackTokens.Count != 0 && stackTokens.Peek()!="(")
+                    else if (stackTokens.Count != 0 && stackTokens.Peek() != "(")
                     {
                         //Prueba extraer de T a op, sin extraccion y utilizando item
                         var nodoTemp = new NodoArbol();
                         nodoTemp.token = item;
-                        if (stackArbol.Count<2)
+                        if (stackArbol.Count < 2)
                         {
                             Console.WriteLine("Error, faltan operandos");
                             break;
@@ -90,7 +90,7 @@ namespace ProyectoLenguajesFormales
                         nodoTemp.hijoIzq = stackArbol.Pop();
                         stackArbol.Push(nodoTemp);
                     }
-                    else if (item == "."|| item == "|")
+                    else if (item == "." || item == "|")
                     {
                         stackTokens.Push(item);
                     }
@@ -103,25 +103,25 @@ namespace ProyectoLenguajesFormales
                     stackArbol.Push(nodoTemp);
                 }
             }
-            while (stackTokens.Count>0)
+            while (stackTokens.Count > 0)
             {
                 var nodoTemp = new NodoArbol();
                 nodoTemp.token = stackTokens.Pop();
-                if (nodoTemp.token=="(")
+                if (nodoTemp.token == "(")
                 {
                     Console.WriteLine("Error, faltan operandos");
                     return null;
                 }
-                if (stackArbol.Count<2)
+                if (stackArbol.Count < 2)
                 {
                     Console.WriteLine("Error, faltan operandos");
                     return null;
                 }
-                nodoTemp.hijoDer=stackArbol.Pop();
+                nodoTemp.hijoDer = stackArbol.Pop();
                 nodoTemp.hijoIzq = stackArbol.Pop();
                 stackArbol.Push(nodoTemp);
             }
-            if (stackArbol.Count!=1)
+            if (stackArbol.Count != 1)
             {
                 Console.WriteLine("Error, faltan operandos");
                 return null;
@@ -129,17 +129,62 @@ namespace ProyectoLenguajesFormales
             return stackArbol.Pop();
         }
 
-        public static void TraversePostOrder(NodoArbol parent)
+        public static void EnumerarHojas (NodoArbol parent)
         {
             if (parent != null)
             {
-                TraversePostOrder(parent.hijoIzq);
-                TraversePostOrder(parent.hijoDer);
-                if (parent.hijoIzq==null && parent.hijoDer == null)
+                EnumerarHojas(parent.hijoIzq);
+                EnumerarHojas(parent.hijoDer);
+                if (parent.hijoIzq == null && parent.hijoDer == null)
                 {
-                    enumeracion++;
                     parent.id = enumeracion;
-                }                
+                    enumeracion++;
+                }
+            }
+        }
+        public static void IdentificarNulos(NodoArbol parent)
+        {
+            if (parent != null)
+            {
+                IdentificarNulos(parent.hijoIzq);
+                IdentificarNulos(parent.hijoDer);
+                if (parent.hijoIzq == null && parent.hijoDer == null)
+                {
+                    parent.nulleable = false;
+                }
+                if (parent.token == "*" || parent.token == "?")
+                {
+                    parent.nulleable = true;
+                }
+                else if (parent.token == "|" || parent.token == "." || parent.token == "+")
+                {
+                    if (parent.token == "|")
+                    {
+                        if (parent.hijoIzq.nulleable == true || parent.hijoDer.nulleable == true)
+                        {
+                            parent.nulleable = true;
+                        }
+                        else
+                        {
+                            parent.nulleable = false;
+                        }
+                    }
+                    else if (parent.token == ".")
+                    {
+                        if (parent.hijoIzq.nulleable == true && parent.hijoDer.nulleable == true)
+                        {
+                            parent.nulleable = true;
+                        }
+                        else
+                        {
+                            parent.nulleable = false;
+                        }
+                    }
+                    else if (parent.token == "+")
+                    {
+                        parent.nulleable = false;
+                    }
+                }
             }
         }
     }

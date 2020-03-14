@@ -367,9 +367,10 @@ namespace ProyectoLenguajesFormales
             var stackTokens = new Stack<string>();
             var ArbolExpresion = Metodos.CreacionArbol(listaExpresionRegular, stackTokens, stackArboles);
             //Enumerar Hojas
-            Metodos.TraversePostOrder(ArbolExpresion);
-            Console.ReadLine();
+            Metodos.EnumerarHojas(ArbolExpresion);
             //Detectar Nullables
+            Metodos.IdentificarNulos(ArbolExpresion);
+            Console.ReadLine();
             //First y Last
             //Follows
             //Transiciones

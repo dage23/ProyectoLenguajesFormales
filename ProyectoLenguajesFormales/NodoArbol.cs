@@ -14,5 +14,6 @@ namespace ProyectoLenguajesFormales
         public NodoArbol hijoDer;
         public int id;
         public string token;
+        public bool nulleable=false;
     }
 }
