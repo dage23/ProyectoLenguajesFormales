@@ -10,6 +10,7 @@ namespace ProyectoLenguajesFormales
     {
         static void Main(string[] args)
         {
+            var dictionaryFolloes = new Dictionary<int, List<int>>();
             var dictionarySets = new Dictionary<string, List<int>>();
             var dictionaryActions = new Dictionary<string, string>();
             var listError = new List<string>();
@@ -161,14 +162,14 @@ namespace ProyectoLenguajesFormales
                                             var tokenParentesis = "(";
                                             foreach (var item in token)
                                             {
-                                                if (item=='|')
+                                                if (item == '|')
                                                 {
-                                                    tokenParentesis = tokenParentesis + ")" + item+"(";
+                                                    tokenParentesis = tokenParentesis + ")" + item + "(";
                                                 }
                                                 else
                                                 {
                                                     tokenParentesis += item;
-                                                }                                                
+                                                }
                                             }
                                             tokenParentesis += ")";
                                             dictionaryTokens.Add(nombreToken.Replace('=', ' ').Trim(), tokenParentesis);
@@ -367,16 +368,16 @@ namespace ProyectoLenguajesFormales
             var stackTokens = new Stack<string>();
             var ArbolExpresion = Metodos.CreacionArbol(listaExpresionRegular, stackTokens, stackArboles);
             //Enumerar Hojas
-            Metodos.EnumerarHojas(ArbolExpresion);
+            var cantidadHojas = Metodos.EnumerarHojas(ArbolExpresion);
             //Detectar Nullables
             Metodos.IdentificarNulos(ArbolExpresion);
             //First y Last
             Metodos.IdentificarFirst(ArbolExpresion);
             Metodos.IdentificarLast(ArbolExpresion);
-            Console.ReadLine();
-            //First y Last
             //Follows
+            
             //Transiciones
+            Console.ReadLine();
 
         }
     }

@@ -8,7 +8,7 @@ namespace ProyectoLenguajesFormales
 {
     class Metodos
     {
-        public static int enumeracion = 1;
+        public static int enumeracion = 0;
         public static int PoseePalabrasReservadas(string archivo)
         {
             var resultado = 1;
@@ -129,7 +129,7 @@ namespace ProyectoLenguajesFormales
             return stackArbol.Pop();
         }
 
-        public static void EnumerarHojas (NodoArbol parent)
+        public static int EnumerarHojas (NodoArbol parent)
         {
             if (parent != null)
             {
@@ -137,10 +137,11 @@ namespace ProyectoLenguajesFormales
                 EnumerarHojas(parent.hijoDer);
                 if (parent.hijoIzq == null && parent.hijoDer == null)
                 {
-                    parent.id = enumeracion.ToString();
                     enumeracion++;
+                    parent.id = enumeracion;
                 }
             }
+            return enumeracion;
         }
         public static void IdentificarNulos(NodoArbol parent)
         {
