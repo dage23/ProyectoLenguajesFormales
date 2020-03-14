@@ -316,42 +316,85 @@ namespace ProyectoLenguajesFormales
             return dictionaryFollows;
         }
 
-        public void Transiciones(Dictionary<int, List<int>> dictionarioFollows, NodoArbol parent)
-        {
-            var firstRaiz = parent.first;
-            RegresarHojas(parent);
-            var diccionarioTrans = new Dictionary<int, List<string>>();
-            var nadaNuevo = true;
-            var transicionesActuales = firstRaiz;
-            var hojas = string.Empty;
-            foreach (var item in listaHojas)
-            {
-                hojas = hojas + item + "|";
-            }
-            Console.WriteLine("Estados | " + hojas);
+        //public static void Transiciones(Dictionary<int, List<int>> dictionarioFollows, NodoArbol parent)
+        //{
+        //    var firstRaiz = parent.first;
+        //    RegresarHojas(parent);
+        //    var diccionarioTrans = new Dictionary<int, List<int>>();
+        //    var diccionaTrans = new List<List<int>>();
+        //    var nadaNuevo = true;
+        //    var transicionesActuales = firstRaiz;
+        //    var hojas = string.Empty;
+        //    var queueEstados = new Queue<List<int>>();
+        //    foreach (var item in listaHojas)
+        //    {
+        //        hojas = hojas + item.id + "|";
+        //    }
+        //    diccionarioTrans.Add(0, firstRaiz);
+        //    while (nadaNuevo)
+        //    {
+        //        foreach (var item in transicionesActuales)
+        //        {
+        //            foreach (var Nodo in listaHojas)
+        //            {
+        //                if (item == Nodo.id)
+        //                {
+        //                    if (diccionarioTrans.ContainsKey(Nodo.id))
+        //                    {
+        //                        var listaParcial = diccionarioTrans[Nodo.id];
+        //                        listaParcial.AddRange(dictionarioFollows[item]);
+        //                        diccionarioTrans[Nodo.id] = listaParcial;
+        //                    }
+        //                    else
+        //                    {
+        //                        if (dictionarioFollows.ContainsKey(item))
+        //                        {
+        //                            diccionarioTrans.Add(Nodo.id, dictionarioFollows[item]);
+        //                        }
+        //                    }
+        //                    diccionaTrans.Add(dictionarioFollows[item]);
+        //                }
+        //            }
+        //        }
+        //        foreach (var item in diccionarioTrans)
+        //        {
+        //            if (item.Key!=0)
+        //            {
+        //                if (!diccionaTrans.Contains(item.Value))
+        //                {
 
-            while (!nadaNuevo)
-            {
-                foreach (var item in transicionesActuales)
-                {
-                    foreach (var Nodo in listaHojas)
-                    {
-                        if (item == Nodo.id)
-                        {                            
-                                if (diccionarioTrans.ContainsKey(Nodo.id))
-                                {
-                                    var listaParcial = diccionarioTrans[Nodo.id];
-                                    listaParcial.AddRange(parent.hijoIzq.first);
-
-                                    diccionarioTrans.(Nodo.id,);
-
-                                }
-                            (dictionarioFollows[item]);
-                        }
-                    }
-                }
-            }
-        }
+        //                    queueEstados.Enqueue(item.Value);
+        //                }
+        //            }                    
+        //        }
+        //        if (queueEstados.Count==0)
+        //        {
+        //            nadaNuevo = false;
+        //        }
+        //        else
+        //        {
+        //            transicionesActuales = queueEstados.Dequeue();
+        //        }
+        //        var cosas = string.Empty;
+        //        foreach (var item in diccionarioTrans[0])
+        //        {
+        //            cosas = cosas + "," + item;
+        //        }
+        //        Console.WriteLine(cosas+"|");
+        //        foreach (var item in diccionarioTrans)
+        //        {
+        //            var cosa = string.Empty;
+        //            if (item.Key != 0)
+        //            {
+        //                foreach (var item2 in item.Value)
+        //                {
+        //                    cosa = cosa +"," + item2;
+        //                }
+        //                Console.WriteLine(item.Key + "|" + cosa);
+        //            }
+        //        }
+        //    }
+        //}
         public static void MostrarFirstLast(NodoArbol parent)
         {
             if (parent != null)

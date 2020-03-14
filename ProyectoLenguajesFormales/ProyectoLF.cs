@@ -408,6 +408,9 @@ namespace ProyectoLenguajesFormales
                 }
                 Console.WriteLine(item.Key +"|"+ first);
             }
+            
+            Console.ReadLine();
+            //Metodos.Transiciones(dictionaryFollows, ArbolExpresion);
             Console.ReadLine();
 
         }
