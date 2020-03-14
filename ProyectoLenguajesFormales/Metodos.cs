@@ -10,6 +10,7 @@ namespace ProyectoLenguajesFormales
     {
         public static int enumeracion = 0;
         public static Dictionary<int, List<int>> dictionaryFollows = new Dictionary<int, List<int>>();
+        public static List<NodoArbol> listaHojas = new List<NodoArbol>();
 
         public static int PoseePalabrasReservadas(string archivo)
         {
@@ -131,7 +132,7 @@ namespace ProyectoLenguajesFormales
             return stackArbol.Pop();
         }
 
-        public static int EnumerarHojas (NodoArbol parent)
+        public static int EnumerarHojas(NodoArbol parent)
         {
             if (parent != null)
             {
@@ -144,6 +145,18 @@ namespace ProyectoLenguajesFormales
                 }
             }
             return enumeracion;
+        }
+        public static void RegresarHojas(NodoArbol parent)
+        {
+            if (parent != null)
+            {
+                RegresarHojas(parent.hijoIzq);
+                RegresarHojas(parent.hijoDer);
+                if (parent.hijoIzq == null && parent.hijoDer == null)
+                {
+                    listaHojas.Add(parent);
+                }
+            }
         }
         public static void IdentificarNulos(NodoArbol parent)
         {
@@ -200,9 +213,9 @@ namespace ProyectoLenguajesFormales
                 {
                     parent.first.Add(parent.id);
                 }
-                if (parent.token==".")
+                if (parent.token == ".")
                 {
-                    if (parent.hijoIzq.nulleable==true)
+                    if (parent.hijoIzq.nulleable == true)
                     {
                         parent.first.AddRange(parent.hijoIzq.first);
                         parent.first.AddRange(parent.hijoDer.first);
@@ -217,7 +230,7 @@ namespace ProyectoLenguajesFormales
                     parent.first.AddRange(parent.hijoIzq.first);
                     parent.first.AddRange(parent.hijoDer.first);
                 }
-                else if (parent.token == "*"|| parent.token == "+"|| parent.token == "?")
+                else if (parent.token == "*" || parent.token == "+" || parent.token == "?")
                 {
                     parent.first.AddRange(parent.hijoIzq.first);
                 }
@@ -260,9 +273,9 @@ namespace ProyectoLenguajesFormales
         {
             if (parent != null)
             {
-                IdentificarFollows(parent.hijoIzq,cantidadHojas);
-                IdentificarFollows(parent.hijoDer,cantidadHojas);
-                if (parent.token == "." || parent.token == "*"||parent.token=="+")
+                IdentificarFollows(parent.hijoIzq, cantidadHojas);
+                IdentificarFollows(parent.hijoDer, cantidadHojas);
+                if (parent.token == "." || parent.token == "*" || parent.token == "+")
                 {
                     if (parent.token == ".")
                     {
@@ -301,6 +314,64 @@ namespace ProyectoLenguajesFormales
                 }
             }
             return dictionaryFollows;
+        }
+
+        public void Transiciones(Dictionary<int, List<int>> dictionarioFollows, NodoArbol parent)
+        {
+            var firstRaiz = parent.first;
+            RegresarHojas(parent);
+            var diccionarioTrans = new Dictionary<int, List<string>>();
+            var nadaNuevo = true;
+            var transicionesActuales = firstRaiz;
+            var hojas = string.Empty;
+            foreach (var item in listaHojas)
+            {
+                hojas = hojas + item + "|";
+            }
+            Console.WriteLine("Estados | " + hojas);
+
+            while (!nadaNuevo)
+            {
+                foreach (var item in transicionesActuales)
+                {
+                    foreach (var Nodo in listaHojas)
+                    {
+                        if (item == Nodo.id)
+                        {                            
+                                if (diccionarioTrans.ContainsKey(Nodo.id))
+                                {
+                                    var listaParcial = diccionarioTrans[Nodo.id];
+                                    listaParcial.AddRange(parent.hijoIzq.first);
+
+                                    diccionarioTrans.(Nodo.id,);
+
+                                }
+                            (dictionarioFollows[item]);
+                        }
+                    }
+                }
+            }
+        }
+        public static void MostrarFirstLast(NodoArbol parent)
+        {
+            if (parent != null)
+            {
+                MostrarFirstLast(parent.hijoIzq);
+                MostrarFirstLast(parent.hijoDer);
+
+                var first = string.Empty;
+                foreach (var item in parent.first)
+                {
+                    first = first + item + ",";
+                }
+                var last = string.Empty;
+                foreach (var item in parent.last)
+                {
+                    last = last + item + ",";
+                }
+                Console.WriteLine(parent.token + "|" + first + "|" + last);
+
+            }
         }
     }
 }

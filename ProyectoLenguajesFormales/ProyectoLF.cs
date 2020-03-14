@@ -376,8 +376,38 @@ namespace ProyectoLenguajesFormales
             Metodos.IdentificarLast(ArbolExpresion);
             //Follows
             dictionaryFollows = Metodos.IdentificarFollows(ArbolExpresion, cantidadHojas);
-            //Transiciones
 
+            Console.WriteLine("SETS");
+            foreach (var item in dictionarySets)
+            {
+                var first = string.Empty;
+                foreach (var item2 in item.Value)
+                {
+                    first = first + Convert.ToChar(item2) + ",";
+                }
+                Console.WriteLine(item.Key + "|" + first);
+            }
+            Console.ReadLine();
+            Console.Clear();
+
+            //Transiciones
+            Console.WriteLine("TOKEN|FIRST|LAST-----CON RECORRIDO POSTORDEN");
+            Metodos.MostrarFirstLast(ArbolExpresion);
+            Console.ReadLine();
+            Console.Clear();
+
+            Console.WriteLine("----------------FOLLOW------CON RECORRIDO POSTORDEN");
+            Console.WriteLine("ID HOJA|FOLLOW");
+
+            foreach (var item in dictionaryFollows)
+            {
+                var first = string.Empty;
+                foreach (var item2 in item.Value)
+                {
+                    first = first + item2 + ",";
+                }
+                Console.WriteLine(item.Key +"|"+ first);
+            }
             Console.ReadLine();
 
         }
