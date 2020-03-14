@@ -10,7 +10,7 @@ namespace ProyectoLenguajesFormales
     {
         static void Main(string[] args)
         {
-            var dictionaryFolloes = new Dictionary<int, List<int>>();
+            var dictionaryFollows = new Dictionary<int, List<int>>();
             var dictionarySets = new Dictionary<string, List<int>>();
             var dictionaryActions = new Dictionary<string, string>();
             var listError = new List<string>();
@@ -375,8 +375,9 @@ namespace ProyectoLenguajesFormales
             Metodos.IdentificarFirst(ArbolExpresion);
             Metodos.IdentificarLast(ArbolExpresion);
             //Follows
-            
+            dictionaryFollows = Metodos.IdentificarFollows(ArbolExpresion, cantidadHojas);
             //Transiciones
+
             Console.ReadLine();
 
         }

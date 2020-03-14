@@ -9,6 +9,8 @@ namespace ProyectoLenguajesFormales
     class Metodos
     {
         public static int enumeracion = 0;
+        public static Dictionary<int, List<int>> dictionaryFollows = new Dictionary<int, List<int>>();
+
         public static int PoseePalabrasReservadas(string archivo)
         {
             var resultado = 1;
@@ -253,6 +255,52 @@ namespace ProyectoLenguajesFormales
                     parent.last.AddRange(parent.hijoIzq.last);
                 }
             }
+        }
+        public static Dictionary<int, List<int>> IdentificarFollows(NodoArbol parent, int cantidadHojas)
+        {
+            if (parent != null)
+            {
+                IdentificarFollows(parent.hijoIzq,cantidadHojas);
+                IdentificarFollows(parent.hijoDer,cantidadHojas);
+                if (parent.token == "." || parent.token == "*"||parent.token=="+")
+                {
+                    if (parent.token == ".")
+                    {
+                        foreach (var item in parent.hijoIzq.last)
+                        {
+                            if (dictionaryFollows.ContainsKey(item))
+                            {
+                                var listaParcial = dictionaryFollows[item];
+                                listaParcial.AddRange(parent.hijoDer.first);
+                                List<int> uniqueList = listaParcial.Distinct().ToList();
+                                dictionaryFollows[item] = uniqueList;
+                            }
+                            else
+                            {
+                                dictionaryFollows.Add(item, parent.hijoDer.first);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in parent.hijoIzq.last)
+                        {
+                            if (dictionaryFollows.ContainsKey(item))
+                            {
+                                var listaParcial = dictionaryFollows[item];
+                                listaParcial.AddRange(parent.hijoIzq.first);
+                                List<int> uniqueList = listaParcial.Distinct().ToList();
+                                dictionaryFollows[item] = uniqueList;
+                            }
+                            else
+                            {
+                                dictionaryFollows.Add(item, parent.hijoIzq.first);
+                            }
+                        }
+                    }
+                }
+            }
+            return dictionaryFollows;
         }
     }
 }
