@@ -137,7 +137,7 @@ namespace ProyectoLenguajesFormales
                 EnumerarHojas(parent.hijoDer);
                 if (parent.hijoIzq == null && parent.hijoDer == null)
                 {
-                    parent.id = enumeracion;
+                    parent.id = enumeracion.ToString();
                     enumeracion++;
                 }
             }
@@ -184,6 +184,72 @@ namespace ProyectoLenguajesFormales
                     {
                         parent.nulleable = false;
                     }
+                }
+            }
+        }
+        public static void IdentificarFirst(NodoArbol parent)
+        {
+            if (parent != null)
+            {
+                IdentificarFirst(parent.hijoIzq);
+                IdentificarFirst(parent.hijoDer);
+                if (parent.hijoIzq == null && parent.hijoDer == null)
+                {
+                    parent.first.Add(parent.id);
+                }
+                if (parent.token==".")
+                {
+                    if (parent.hijoIzq.nulleable==true)
+                    {
+                        parent.first.AddRange(parent.hijoIzq.first);
+                        parent.first.AddRange(parent.hijoDer.first);
+                    }
+                    else
+                    {
+                        parent.first.AddRange(parent.hijoIzq.first);
+                    }
+                }
+                else if (parent.token == "|")
+                {
+                    parent.first.AddRange(parent.hijoIzq.first);
+                    parent.first.AddRange(parent.hijoDer.first);
+                }
+                else if (parent.token == "*"|| parent.token == "+"|| parent.token == "?")
+                {
+                    parent.first.AddRange(parent.hijoIzq.first);
+                }
+            }
+        }
+        public static void IdentificarLast(NodoArbol parent)
+        {
+            if (parent != null)
+            {
+                IdentificarLast(parent.hijoIzq);
+                IdentificarLast(parent.hijoDer);
+                if (parent.hijoIzq == null && parent.hijoDer == null)
+                {
+                    parent.last.Add(parent.id);
+                }
+                if (parent.token == ".")
+                {
+                    if (parent.hijoDer.nulleable == true)
+                    {
+                        parent.last.AddRange(parent.hijoIzq.last);
+                        parent.last.AddRange(parent.hijoDer.last);
+                    }
+                    else
+                    {
+                        parent.last.AddRange(parent.hijoDer.last);
+                    }
+                }
+                else if (parent.token == "|")
+                {
+                    parent.last.AddRange(parent.hijoIzq.last);
+                    parent.last.AddRange(parent.hijoDer.last);
+                }
+                else if (parent.token == "*" || parent.token == "+" || parent.token == "?")
+                {
+                    parent.last.AddRange(parent.hijoIzq.last);
                 }
             }
         }

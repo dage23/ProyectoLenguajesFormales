@@ -8,12 +8,13 @@ namespace ProyectoLenguajesFormales
 {
     class NodoArbol
     {
-        public string first;
-        public string last;
+        public List<string> first = new List<string>();
+        public List<string> last = new List<string>();
         public NodoArbol hijoIzq;
         public NodoArbol hijoDer;
-        public int id;
+        public string id;
         public string token;
-        public bool nulleable=false;
+        public bool nulleable = false;
+
     }
 }

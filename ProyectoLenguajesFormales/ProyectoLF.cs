@@ -370,6 +370,9 @@ namespace ProyectoLenguajesFormales
             Metodos.EnumerarHojas(ArbolExpresion);
             //Detectar Nullables
             Metodos.IdentificarNulos(ArbolExpresion);
+            //First y Last
+            Metodos.IdentificarFirst(ArbolExpresion);
+            Metodos.IdentificarLast(ArbolExpresion);
             Console.ReadLine();
             //First y Last
             //Follows
