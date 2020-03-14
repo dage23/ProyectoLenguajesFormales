@@ -8,6 +8,7 @@ namespace ProyectoLenguajesFormales
 {
     class Metodos
     {
+        public static int enumeracion = 0;
         public static int PoseePalabrasReservadas(string archivo)
         {
             var resultado = 1;
@@ -126,6 +127,20 @@ namespace ProyectoLenguajesFormales
                 return null;
             }
             return stackArbol.Pop();
+        }
+
+        public static void TraversePostOrder(NodoArbol parent)
+        {
+            if (parent != null)
+            {
+                TraversePostOrder(parent.hijoIzq);
+                TraversePostOrder(parent.hijoDer);
+                if (parent.hijoIzq==null && parent.hijoDer == null)
+                {
+                    enumeracion++;
+                    parent.id = enumeracion;
+                }                
+            }
         }
     }
 }
