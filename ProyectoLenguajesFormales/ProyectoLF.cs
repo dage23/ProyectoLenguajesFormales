@@ -410,7 +410,9 @@ namespace ProyectoLenguajesFormales
             }
             
             Console.ReadLine();
-            //Metodos.Transiciones(dictionaryFollows, ArbolExpresion);
+            Console.Clear();
+
+            Metodos.Transiciones(dictionaryFollows, ArbolExpresion);
             Console.ReadLine();
 
         }

@@ -8,10 +8,25 @@ namespace ProyectoLenguajesFormales
 {
     class Metodos
     {
+        public static int numeroHojaNumeral = 0;
+        public static bool bandera = true;
+        public static int contadorListaEstados = 0;
         public static int enumeracion = 0;
         public static Dictionary<int, List<int>> dictionaryFollows = new Dictionary<int, List<int>>();
         public static List<NodoArbol> listaHojas = new List<NodoArbol>();
 
+        public static void BuscarNumeral(NodoArbol parent)
+        {
+            if (parent != null)
+            {
+                BuscarNumeral(parent.hijoIzq);
+                BuscarNumeral(parent.hijoDer);
+                if (parent.token=="#")
+                {
+                    numeroHojaNumeral = parent.id;
+                }
+            }
+        }
         public static int PoseePalabrasReservadas(string archivo)
         {
             var resultado = 1;
@@ -33,7 +48,6 @@ namespace ProyectoLenguajesFormales
             }
             return resultado;
         }
-
         public static NodoArbol CreacionArbol(List<string> listaToken, Stack<string> stackTokens, Stack<NodoArbol> stackArbol)
         {
             foreach (var item in listaToken)
@@ -131,7 +145,6 @@ namespace ProyectoLenguajesFormales
             }
             return stackArbol.Pop();
         }
-
         public static int EnumerarHojas(NodoArbol parent)
         {
             if (parent != null)
@@ -315,86 +328,6 @@ namespace ProyectoLenguajesFormales
             }
             return dictionaryFollows;
         }
-
-        //public static void Transiciones(Dictionary<int, List<int>> dictionarioFollows, NodoArbol parent)
-        //{
-        //    var firstRaiz = parent.first;
-        //    RegresarHojas(parent);
-        //    var diccionarioTrans = new Dictionary<int, List<int>>();
-        //    var diccionaTrans = new List<List<int>>();
-        //    var nadaNuevo = true;
-        //    var transicionesActuales = firstRaiz;
-        //    var hojas = string.Empty;
-        //    var queueEstados = new Queue<List<int>>();
-        //    foreach (var item in listaHojas)
-        //    {
-        //        hojas = hojas + item.id + "|";
-        //    }
-        //    diccionarioTrans.Add(0, firstRaiz);
-        //    while (nadaNuevo)
-        //    {
-        //        foreach (var item in transicionesActuales)
-        //        {
-        //            foreach (var Nodo in listaHojas)
-        //            {
-        //                if (item == Nodo.id)
-        //                {
-        //                    if (diccionarioTrans.ContainsKey(Nodo.id))
-        //                    {
-        //                        var listaParcial = diccionarioTrans[Nodo.id];
-        //                        listaParcial.AddRange(dictionarioFollows[item]);
-        //                        diccionarioTrans[Nodo.id] = listaParcial;
-        //                    }
-        //                    else
-        //                    {
-        //                        if (dictionarioFollows.ContainsKey(item))
-        //                        {
-        //                            diccionarioTrans.Add(Nodo.id, dictionarioFollows[item]);
-        //                        }
-        //                    }
-        //                    diccionaTrans.Add(dictionarioFollows[item]);
-        //                }
-        //            }
-        //        }
-        //        foreach (var item in diccionarioTrans)
-        //        {
-        //            if (item.Key!=0)
-        //            {
-        //                if (!diccionaTrans.Contains(item.Value))
-        //                {
-
-        //                    queueEstados.Enqueue(item.Value);
-        //                }
-        //            }                    
-        //        }
-        //        if (queueEstados.Count==0)
-        //        {
-        //            nadaNuevo = false;
-        //        }
-        //        else
-        //        {
-        //            transicionesActuales = queueEstados.Dequeue();
-        //        }
-        //        var cosas = string.Empty;
-        //        foreach (var item in diccionarioTrans[0])
-        //        {
-        //            cosas = cosas + "," + item;
-        //        }
-        //        Console.WriteLine(cosas+"|");
-        //        foreach (var item in diccionarioTrans)
-        //        {
-        //            var cosa = string.Empty;
-        //            if (item.Key != 0)
-        //            {
-        //                foreach (var item2 in item.Value)
-        //                {
-        //                    cosa = cosa +"," + item2;
-        //                }
-        //                Console.WriteLine(item.Key + "|" + cosa);
-        //            }
-        //        }
-        //    }
-        //}
         public static void MostrarFirstLast(NodoArbol parent)
         {
             if (parent != null)
@@ -415,6 +348,104 @@ namespace ProyectoLenguajesFormales
                 Console.WriteLine(parent.token + "|" + first + "|" + last);
 
             }
+        }
+        public static void Transiciones(Dictionary<int, List<int>> Follows, NodoArbol ArbolExpresion)
+        {
+            var ListaEstados = new List<List<int>>(); 
+            var primerEstadoInicial = ArbolExpresion.first;
+            var estadoInicial = ArbolExpresion.first;
+            RegresarHojas(ArbolExpresion);
+            var listaCaracteresSinRepetir = new List<string>();
+            foreach (var item in listaHojas)
+            {
+                var caracter = item.token;
+                if (!listaCaracteresSinRepetir.Contains(caracter) && caracter != "#")
+                {
+                    listaCaracteresSinRepetir.Add(caracter);
+                }
+            }
+            ListaEstados.Add(estadoInicial);
+            estadoInicial = ListaEstados[contadorListaEstados];
+
+            do
+            {
+                Console.Write("Estado   |");
+                foreach (var item in listaCaracteresSinRepetir)
+                {
+                    Console.Write(item + "    |");
+                }
+
+                var estadoEscribir = string.Empty;
+                foreach (var item in estadoInicial)
+                {
+                    estadoEscribir += (item + ",");
+                }
+                Console.WriteLine();
+                Console.Write(estadoEscribir + "     |");
+                foreach (var item in listaCaracteresSinRepetir)
+                {
+                    var siguienteEstado = new List<int>();
+                    foreach (var estados in estadoInicial)
+                    {
+                        if (listaHojas[estados - 1].token == item)
+                        {
+                            siguienteEstado.AddRange(Follows[estados]);
+                        }
+                    }
+                    var comparacion = false;
+                    foreach (var listaNumeros in ListaEstados)
+                    {
+                        comparacion = listaNumeros.SequenceEqual(siguienteEstado);
+                        if (comparacion)
+                        {
+                            break;
+                        }
+                    }
+                    if (!comparacion)
+                    {
+                        ListaEstados.Add(siguienteEstado);
+                    }
+                    var escribirEstadoSiguiente = string.Empty;
+                    foreach (var numero in siguienteEstado)
+                    {
+                        escribirEstadoSiguiente += (numero + ",");
+                    }
+                    Console.Write(escribirEstadoSiguiente + "   |");
+                }
+                try
+                {
+                    contadorListaEstados += 1;
+                    estadoInicial = ListaEstados[contadorListaEstados];
+                }
+                catch (Exception)
+                {
+                    bandera = false;
+                }
+                Console.WriteLine();
+                Console.WriteLine();
+
+            } while (bandera);
+            var escribirPrimerEstado = string.Empty;
+            foreach (var item in primerEstadoInicial)
+            {
+                escribirPrimerEstado += (item + ",");
+            }
+            Console.WriteLine("Estado Inicial: " + escribirPrimerEstado);
+            BuscarNumeral(ArbolExpresion);
+            Console.WriteLine("Estados de Aceptacion: ");
+            foreach (var item in ListaEstados)
+            {
+                var escribirEstadoAcpetacion = string.Empty;
+                if (item.Contains(numeroHojaNumeral))
+                {
+                    foreach (var item2 in item)
+                    {
+                        escribirEstadoAcpetacion = escribirEstadoAcpetacion + item2 + ",";
+                    }
+                    Console.WriteLine(escribirEstadoAcpetacion);
+                }
+            }
+            Console.ReadLine();
         }
     }
 }
