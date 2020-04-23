@@ -437,6 +437,8 @@ namespace ProyectoLenguajesFormales
             Console.WriteLine("Estado Inicial: " + escribirPrimerEstado);
             BuscarNumeral(ArbolExpresion);
             Console.WriteLine("Estados de Aceptacion: ");
+            var estadosAceptacion = new List<int>();
+            var cont = 1;
             foreach (var item in ListaEstados)
             {
                 var escribirEstadoAcpetacion = string.Empty;
@@ -446,8 +448,11 @@ namespace ProyectoLenguajesFormales
                     {
                         escribirEstadoAcpetacion = escribirEstadoAcpetacion + item2 + ",";
                     }
+                    estadosAceptacion.Add(cont);
+
                     Console.WriteLine(escribirEstadoAcpetacion);
                 }
+                cont++;
             }
             var nuevaListaEstados = new Dictionary<int,string>();
             var i = 1;
@@ -499,7 +504,17 @@ namespace ProyectoLenguajesFormales
             {
                 listaEstadosNumeros[j] = (listaEstadosNumeros[j].Remove(listaEstadosNumeros[j].Length - 1, 1));
             }
-
+            for (int hh = 0; hh < listaEstadosNumeros.Count(); hh++)
+            {
+                var separar = listaEstadosNumeros[hh].Split('|');
+                foreach (var item in estadosAceptacion)
+                {
+                    if (separar[0]==item.ToString())
+                    {
+                        listaEstadosNumeros[hh] = listaEstadosNumeros[hh] + "|F";
+                    }
+                }
+            }
             return listaEstadosNumeros;
         }
     }

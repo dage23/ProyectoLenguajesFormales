@@ -297,7 +297,7 @@ namespace ProyectoLenguajesFormales
                                             formatoFinal = formatoFinal.Replace("'", string.Empty);
                                             formatoFinal = formatoFinal.Trim();
                                             var separacionIgual = formatoFinal.Split('=');
-                                            dictionaryActions.Add(separacionIgual[0], separacionIgual[1]);
+                                            dictionaryActions.Add(separacionIgual[1], separacionIgual[0]);
                                         }
                                     }
                                 }
@@ -406,20 +406,21 @@ namespace ProyectoLenguajesFormales
                 {
                     first = first + item2 + ",";
                 }
-                Console.WriteLine(item.Key +"|"+ first);
+                Console.WriteLine(item.Key + "|" + first);
             }
-            
+
             Console.ReadLine();
             Console.Clear();
 
-            var lista=Metodos.Transiciones(dictionaryFollows, ArbolExpresion);
+            var lista = Metodos.Transiciones(dictionaryFollows, ArbolExpresion);
+            //Construir sintaxis
             var diccionarioIf = new Dictionary<int, string>();
             var listCase = new List<string>();
             var i = 1;
             foreach (var item in lista)
             {
                 var dividir = item.Split('|');
-                if (dividir[0]=="Caracteres")
+                if (dividir[0] == "Caracteres" && dividir.Length == 2)
                 {
                     var dividirCaracteres = dividir[1].Split('~');
                     foreach (var item2 in dividirCaracteres)
@@ -429,33 +430,86 @@ namespace ProyectoLenguajesFormales
                             var listadoCaracteres = dictionarySets[item2];
                             var inferiorLimite = listadoCaracteres[0];
                             var superiorLimite = listadoCaracteres.Max();
-                            var sentenciaIf = "caracter[i] == " + inferiorLimite + " && caracter[i] ==" + superiorLimite;
+                            var sentenciaIf = "Convert.ToByte(Convert.ToChar(caracter[i])) >= " + inferiorLimite + " && Convert.ToByte(Convert.ToChar(caracter[i])) <=" + superiorLimite;
                             diccionarioIf.Add(i, sentenciaIf);
                             i++;
                         }
                         else
                         {
                             var caracterAscii = Convert.ToByte(Convert.ToChar(item2));
-                            var sentenciaIf = "caracter[i]==" + caracterAscii;
+                            var sentenciaIf = "Convert.ToByte(Convert.ToChar(caracter[i]))==" + caracterAscii;
                             diccionarioIf.Add(i, sentenciaIf);
                             i++;
                         }
                     }
                 }
-                else
+                else if (dividir.Length == 3)
+                {
+                    var sentenciaCase = "case " + dividir[0] + " : ";
+                    var separarTransiciones = dividir[1].Split(' ');
+                    var estadoNoValidos = string.Empty;
+                    var contador = 1;
+                    var bandera = false;
+                    foreach (var item3 in separarTransiciones)
+                    {
+                        var sentenciaIf = string.Empty;
+
+                        if (item3.Length > 1 && item3 != " ")
+                        {
+                            foreach (var item4 in item3)
+                            {
+                                if (item4 == '~')
+                                {
+                                    contador++;
+                                }
+                                else
+                                {
+                                    sentenciaIf = "if (" + diccionarioIf[contador] + ") \n";
+                                    sentenciaIf = sentenciaIf + " { Estado = " + item4 + ";\n salir=true; }\n";
+                                    contador++;
+                                }
+                            }
+                        }
+                        else if (item3.Length == 1 && item3 != " ")
+                        {
+                            sentenciaIf = "if (" + diccionarioIf[contador] + ")\n";
+                            sentenciaIf = sentenciaIf + " { Estado = " + item3 + ";\n salir=true; }\n";
+                        }
+                        if (sentenciaIf == "")
+                        {
+                            bandera = true;
+                        }
+                        sentenciaCase = sentenciaCase + sentenciaIf;
+                        contador++;
+                    }
+                    if (bandera)
+                    {
+                        sentenciaCase = sentenciaCase + " salir=true;\n break;\n";
+                        listCase.Add(sentenciaCase);
+                    }
+                    else
+                    {
+                        sentenciaCase = sentenciaCase + "else { salir = true;} break;\n";
+                        listCase.Add(sentenciaCase);
+                    }
+
+
+                }
+                else if (dividir.Length == 2)
                 {
                     var sentenciaCase = "case " + dividir[0] + " : ";
                     var separarTransiciones = dividir[1].Split(' ');
                     var estadoNoValidos = string.Empty;
                     var contador = 1;
                     var sentenciaIf = string.Empty;
+                    var bandera = false;
                     foreach (var item3 in separarTransiciones)
                     {
-                        if (item3.Length>1)
+                        if (item3.Length > 1 && item3 != " ")
                         {
                             foreach (var item4 in item3)
                             {
-                                if (item4=='~')
+                                if (item4 == '~')
                                 {
                                     contador++;
                                 }
@@ -467,48 +521,91 @@ namespace ProyectoLenguajesFormales
                                 }
                             }
                         }
-                        else if (item3.Length==1)
+                        else if (item3.Length == 1 && item3 != " ")
                         {
                             sentenciaIf = "if (" + diccionarioIf[contador] + ")\n";
                             sentenciaIf = sentenciaIf + " { Estado = " + item3 + "; }\n";
+                        }
+                        if (sentenciaIf == "")
+                        {
+                            bandera = true;
                         }
                         sentenciaCase = sentenciaCase + sentenciaIf;
                         sentenciaIf = "";
                         contador++;
                     }
-                    sentenciaCase = sentenciaCase + "else { salir = true;} break;\n";
+                    sentenciaCase = sentenciaCase + "salir = true;\n break;\n";
                     listCase.Add(sentenciaCase);
-                }               
+
+                }
             }
-            var sentenciaSwitch = "while(salir!) { \n switch(Estado) { \n";
+            var sentenciaSwitch = "while(!salir) { \n switch(Estado) { \n";
             foreach (var item in listCase)
             {
                 sentenciaSwitch = sentenciaSwitch + item;
             }
             sentenciaSwitch = sentenciaSwitch + " }; }";
-            var sentenciaSwitchTokens = " { switch (Estado) { \n";
+            var sentenciaSwitchTokens = "  switch (Estado) { \n";
             foreach (var item in lista)
             {
                 var dividirPipe = item.Split('|');
-                if (dividirPipe[0]=="Caracteres"|| dividirPipe[0] == "1")
+                if (dividirPipe[0] == "Caracteres" || dividirPipe[0] == "1")
                 {
                     //do nothing
                 }
                 else
                 {
-                    sentenciaSwitchTokens = sentenciaSwitchTokens + " case " + dividirPipe[0]+": NumToken = " +(Convert.ToInt32(dividirPipe[0])-1)+"; break; \n";
+                    sentenciaSwitchTokens = sentenciaSwitchTokens + " case " + dividirPipe[0] + ": NumToken = " + (Convert.ToInt32(dividirPipe[0]) - 1) + "; break; \n";
                 }
             }
             sentenciaSwitchTokens = sentenciaSwitchTokens + "default: NumToken = " + listError[0] + "; break; \n";
             sentenciaSwitchTokens = sentenciaSwitchTokens + " };";
 
             Console.ReadLine();
-            Console.Clear();
-            Console.WriteLine(sentenciaSwitch);
-            Console.WriteLine(sentenciaSwitchTokens);
             Console.ReadLine();
-
-
+            var infoArchivo = new FileInfo(rutaArchivo);
+            var nombreArchivo = infoArchivo.Name.Trim().Split('.')[0];
+            nombreArchivo = nombreArchivo.Replace(" ", "");
+            var encabezado = "using System; \n using System.Collections.Generic;\n using System.Linq;\nusing System.IO;\n public class " + nombreArchivo + "{\n" + "public static void Main()\n{\n";
+            
+            var cuerpo = "var diccionarioActions= new Dictionary<string,int>();";
+            
+            var comillas = Convert.ToChar(34);
+            foreach (var item in dictionaryActions)
+            {
+                var key = item.Key.TrimStart();
+                cuerpo = cuerpo + "\n  diccionarioActions.Add(" + comillas + key + comillas + "," + item.Value + ");";
+            }
+            cuerpo += "\n";
+            cuerpo += "var error = false;\n var salir=false;\nvar NumToken = 0;\nConsole.WriteLine(" + comillas + "Ingrese ruta de archivo a analizar" + comillas + ");";
+            cuerpo += "var ruta = Console.ReadLine();\n";
+            
+            var cuerpoStreamReader = "using (var reader = new StreamReader(new FileStream(ruta, FileMode.Open)))\ntry\n{\n";
+            cuerpoStreamReader += "var lineaActual = reader.ReadToEnd();\nvar separacion=lineaActual.Split(' ');\n";
+            
+            var cuerpoForeach = "foreach( var caracter in separacion)\n{\n salir=false;\nvar Estado=1;\n";
+            cuerpoForeach += "if(caracter.Length>1)\n{\n//Es reservada\n if(diccionarioActions.ContainsKey(caracter))\n{\n";
+            cuerpoForeach +="NumToken=diccionarioActions[caracter];\n}\nelse\n{var arregloTokens=new int[caracter.Length];\n";
+            cuerpoForeach += "for(int i =0;i<caracter.Length;i++)\n{\n"+sentenciaSwitch+"\n"+sentenciaSwitchTokens+"\n";
+            cuerpoForeach += "arregloTokens[i] = NumToken; \n }\n}\n Console.WriteLine(caracter+"+comillas+"="+comillas+"+NumToken);\n}\n";
+            cuerpoForeach += "else\n{\n for(int i =0;i<caracter.Length;i++)\n{\n" +sentenciaSwitch+"\n"+sentenciaSwitchTokens+"\n"+"Console.WriteLine(Convert.ToChar(caracter).ToString()+"+comillas+"="+comillas+"+ NumToken);\n}";
+           
+            var pieForeach = "}";
+            
+            var pieStreamReader = "}\n}\ncatch (Exception)\n{\nthrow;\n}\n";
+            
+            var pie = "\nConsole.ReadLine();\n} \n }";
+           
+            using (StreamWriter escritor  =File.CreateText("D:\\analisis"+nombreArchivo+".cs"))
+            {
+                escritor.Write(encabezado);
+                escritor.Write(cuerpo);
+                escritor.Write(cuerpoStreamReader);
+                escritor.Write(cuerpoForeach);
+                escritor.Write(pieForeach);
+                escritor.Write(pieStreamReader);
+                escritor.Write(pie);
+            }
         }
     }
 }
