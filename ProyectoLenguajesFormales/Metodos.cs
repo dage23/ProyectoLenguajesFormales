@@ -349,8 +349,9 @@ namespace ProyectoLenguajesFormales
 
             }
         }
-        public static void Transiciones(Dictionary<int, List<int>> Follows, NodoArbol ArbolExpresion)
+        public static List<string> Transiciones(Dictionary<int, List<int>> Follows, NodoArbol ArbolExpresion)
         {
+            var diccionarioEstados = new List<string>();
             var ListaEstados = new List<List<int>>(); 
             var primerEstadoInicial = ArbolExpresion.first;
             var estadoInicial = ArbolExpresion.first;
@@ -366,9 +367,9 @@ namespace ProyectoLenguajesFormales
             }
             ListaEstados.Add(estadoInicial);
             estadoInicial = ListaEstados[contadorListaEstados];
-
             do
             {
+                var estadoCompleto = string.Empty;
                 Console.Write("Estado   |");
                 foreach (var item in listaCaracteresSinRepetir)
                 {
@@ -408,9 +409,11 @@ namespace ProyectoLenguajesFormales
                     var escribirEstadoSiguiente = string.Empty;
                     foreach (var numero in siguienteEstado)
                     {
-                        escribirEstadoSiguiente += (numero + ",");
+                        escribirEstadoSiguiente += (numero + ",");                        
+
                     }
                     Console.Write(escribirEstadoSiguiente + "   |");
+                    estadoCompleto = estadoCompleto + escribirEstadoSiguiente + "|";
                 }
                 try
                 {
@@ -421,6 +424,7 @@ namespace ProyectoLenguajesFormales
                 {
                     bandera = false;
                 }
+                diccionarioEstados.Add(estadoCompleto);
                 Console.WriteLine();
                 Console.WriteLine();
 
@@ -445,7 +449,52 @@ namespace ProyectoLenguajesFormales
                     Console.WriteLine(escribirEstadoAcpetacion);
                 }
             }
-            Console.ReadLine();
+            var nuevaListaEstados = new Dictionary<int,string>();
+            var i = 1;
+            foreach (var item in ListaEstados)
+            {
+                var concatenacion = string.Empty;
+                foreach (var item2 in item)
+                {
+                    concatenacion = concatenacion + item2 + ",";
+                }
+                nuevaListaEstados.Add(i, concatenacion);
+                i++;
+            }
+            nuevaListaEstados.Remove(nuevaListaEstados.Count());
+            var listaEstadosNumeros = new List < string > ();
+            var contadorAux = 1;
+            var lineaAux = string.Empty;
+            foreach (var item in listaCaracteresSinRepetir)
+            {
+                lineaAux = lineaAux + item + "~";
+            }
+            listaEstadosNumeros.Add("Caracteres|"+lineaAux);
+            diccionarioEstados.RemoveAt(diccionarioEstados.Count() - 1);
+            foreach (var item in diccionarioEstados)
+            {
+                var bandera = true;
+                var linea = contadorAux.ToString()+"|";   
+                var separacion = item.Split('|');
+                foreach (var item2 in separacion)
+                {
+                    foreach (var item3 in nuevaListaEstados)
+                    {
+                        if (item3.Value==item2)
+                        {
+                            linea = linea + item3.Key.ToString()+"~";
+                            bandera = false;
+                        }
+                    }
+                    if (bandera)
+                    {
+                        linea = linea+ "~";
+                    }
+                }
+                listaEstadosNumeros.Add(linea);
+                contadorAux++;
+            }
+            return listaEstadosNumeros;
         }
     }
 }
