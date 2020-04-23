@@ -482,7 +482,7 @@ namespace ProyectoLenguajesFormales
                     {
                         if (item3.Value==item2)
                         {
-                            linea = linea + item3.Key.ToString()+"~";
+                            linea = linea + item3.Key.ToString()+" ";
                             bandera = false;
                         }
                     }
@@ -490,10 +490,16 @@ namespace ProyectoLenguajesFormales
                     {
                         linea = linea+ "~";
                     }
+                    bandera = true;
                 }
                 listaEstadosNumeros.Add(linea);
                 contadorAux++;
             }
+            for (int j = 0;j < listaEstadosNumeros.Count(); j++)
+            {
+                listaEstadosNumeros[j] = (listaEstadosNumeros[j].Remove(listaEstadosNumeros[j].Length - 1, 1));
+            }
+
             return listaEstadosNumeros;
         }
     }
